@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/add_recipe_screen.dart';
 import 'package:provider/provider.dart';
 import 'models/recipe_list.dart';
+import 'models/theme_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ChangeNotifierProvider(create: (ctx) => RecipeList(), child: MyApp()));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RecipeList()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       title: 'Кулинарная книга',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      routes: {
-        "/": (context) => HomeScreen(),
-        "/add-recipe": (context) => AddRecipeScreen(),
-      },
-      initialRoute: "/",
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeProvider.themeMode,
+      home: HomeScreen(),
     );
   }
 }
